@@ -51,4 +51,4 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: bundle
-          path: apps/platform/bundle-platform
+          path: apps/platform/bundle-platform/*
