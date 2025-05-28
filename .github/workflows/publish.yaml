@@ -1,9 +1,16 @@
 name: Development build
 
 on:
-  push:
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+'
+  workflow_dispatch:
+    inputs:
+      tag:
+        type: string
+        description: 'Tag to build against'
+        required: true
+      data_release_location:
+        type: string
+        description: 'Location of the data release'
+        required: false
 
 jobs:
   ci:
@@ -12,10 +19,13 @@ jobs:
   build:
     uses: ./.github/workflows/build.yaml
     needs: ci
+    with:
+      tag: ${{ github.event.inputs.tag }}
+      data_release_location: ${{ github.event.inputs.data_release_location || '' }}
 
-  image:
-    uses: ./.github/workflows/image.yaml
-    needs: build
+  # image:
+  #   uses: ./.github/workflows/image.yaml
+  #   needs: build
 
   release:
     name: Release 🚀
@@ -24,7 +34,7 @@ jobs:
     permissions:
       contents: write
     env:
-      TAG: ${{ github.ref_name }}
+      TAG: ${{ github.event.inputs.tag }}
     steps:
       - name: Prepare tag
         run: |
